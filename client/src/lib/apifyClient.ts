@@ -42,12 +42,14 @@ export function processApifyResponse(data: any[]): ApifyAd[] {
     
     // Obtener la imagen del anuncio
     const imageUrl =
+      item.snapshot?.cards?.[0]?.resizedImageUrl ||
+      item.snapshot?.cards?.[0]?.originalImageUrl ||
       item.snapshot?.images?.[0]?.resizedImageUrl ||
       item.snapshot?.images?.[0]?.originalImageUrl ||
       '';
 
     // Obtener el cuerpo del anuncio
-    const adBody = item.snapshot?.body?.text || '';
+    const adBody = item.snapshot?.cards?.[0]?.body || item.snapshot?.body?.text || '';
 
     const ad: ApifyAd = {
       ad_delivery_start_time: startDate,
