@@ -57,7 +57,7 @@ export default function Home() {
     try {
       // Usar datos de ejemplo si la URL contiene 'mock'
       let rawData;
-      
+
       if (targetUrl.toLowerCase().includes('mock')) {
         setProgress('Usando datos de ejemplo...');
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -112,13 +112,16 @@ export default function Home() {
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Meta Ads Analyzer
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Descubre los anuncios ganadores (30+ días activos)
-              </p>
+            <div className="flex items-center gap-4">
+              <img src="/logo.png" alt="Logo" className="h-10 object-contain" />
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">
+                  Meta Ads Analyzer
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Descubre los anuncios ganadores (30+ días activos)
+                </p>
+              </div>
             </div>
           </div>
         </div>
