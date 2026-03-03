@@ -11,6 +11,7 @@ export interface ApifyAd {
   ad_delivery_end_time?: string;
   ad_creative_bodies?: string[];
   ad_snapshot_url?: string;
+  ad_video_url?: string;
   page_name?: string;
   adLibraryUrl?: string;
   adCreativeBody?: string;
@@ -39,13 +40,23 @@ export function processApifyResponse(data: any[]): ApifyAd[] {
     const endDate = item.endDateFormatted || item.endDate;
     const pageName = item.snapshot?.pageName || item.pageName || 'Unknown';
     const pageProfilePictureUrl = item.snapshot?.pageProfilePictureUrl;
-    
-    // Obtener la imagen del anuncio
+
+    // Obtener la imagen del anuncio (o thumbnail del video)
     const imageUrl =
+      item.snapshot?.cards?.[0]?.videoPreviewImageUrl ||
+      item.snapshot?.videos?.[0]?.videoPreviewImageUrl ||
       item.snapshot?.cards?.[0]?.resizedImageUrl ||
       item.snapshot?.cards?.[0]?.originalImageUrl ||
       item.snapshot?.images?.[0]?.resizedImageUrl ||
       item.snapshot?.images?.[0]?.originalImageUrl ||
+      '';
+
+    // Obtener el video del anuncio si existe
+    const videoUrl =
+      item.snapshot?.cards?.[0]?.videoHdUrl ||
+      item.snapshot?.cards?.[0]?.videoSdUrl ||
+      item.snapshot?.videos?.[0]?.videoHdUrl ||
+      item.snapshot?.videos?.[0]?.videoSdUrl ||
       '';
 
     // Obtener el cuerpo del anuncio
@@ -57,6 +68,7 @@ export function processApifyResponse(data: any[]): ApifyAd[] {
       page_name: pageName,
       ad_creative_bodies: adBody ? [adBody] : [],
       ad_snapshot_url: imageUrl,
+      ad_video_url: videoUrl,
       pageProfilePictureUrl: pageProfilePictureUrl,
       // Campos adicionales para referencia
       adLibraryUrl: item.inputUrl,
@@ -122,11 +134,11 @@ export async function executeFullScrape(
     onProgress?.('Procesando resultados...');
 
     const rawData = await response.json();
-    
+
     if (!Array.isArray(rawData)) {
       throw new Error('Respuesta inesperada de Apify: se esperaba un array de anuncios');
     }
-    
+
     const processedAds = processApifyResponse(rawData);
 
     if (processedAds.length === 0) {

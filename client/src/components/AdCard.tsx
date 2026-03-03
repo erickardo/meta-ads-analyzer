@@ -27,6 +27,7 @@ export default function AdCard({ ad }: AdCardProps) {
       <div className="relative">
         <ImageLightbox
           src={ad.ad_snapshot_url || ''}
+          videoUrl={ad.ad_video_url}
           alt={`Anuncio de ${ad.page_name}`}
           pageName={ad.page_name || 'Unknown'}
         />

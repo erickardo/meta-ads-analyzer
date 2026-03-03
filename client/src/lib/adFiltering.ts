@@ -7,6 +7,7 @@ export interface Ad {
   ad_delivery_start_time: string | number | undefined;
   ad_creative_bodies: string[] | undefined;
   ad_snapshot_url: string | undefined;
+  ad_video_url: string | undefined;
   page_name: string | undefined;
   [key: string]: any;
 }
@@ -23,15 +24,15 @@ export function calculateDuration(startTime: string | number | undefined): numbe
   if (!startTime) {
     return 0;
   }
-  
-  const startDate = typeof startTime === 'string' 
-    ? new Date(startTime).getTime() 
+
+  const startDate = typeof startTime === 'string'
+    ? new Date(startTime).getTime()
     : startTime;
-  
+
   const currentDate = new Date().getTime();
   const durationMs = currentDate - startDate;
   const durationDays = durationMs / (1000 * 60 * 60 * 24);
-  
+
   return Math.floor(durationDays);
 }
 
@@ -41,7 +42,7 @@ export function calculateDuration(startTime: string | number | undefined): numbe
 export function processAd(ad: Ad): ProcessedAd {
   const duration_in_days = calculateDuration(ad.ad_delivery_start_time);
   const is_winner = duration_in_days > 30;
-  
+
   return {
     ...ad,
     duration_in_days,
@@ -62,20 +63,20 @@ export function processAd(ad: Ad): ProcessedAd {
 export function filterAndSortAds(ads: Ad[], limit: number = 4): ProcessedAd[] {
   // Procesar todos los anuncios
   const processedAds = ads.map(processAd);
-  
+
   // Separar ganadores y no ganadores
   const winners = processedAds.filter(ad => ad.is_winner);
   const nonWinners = processedAds.filter(ad => !ad.is_winner);
-  
+
   // Ordenar ganadores por más antiguos primero (menor duración primero en el array, pero mostrar los más antiguos)
   winners.sort((a, b) => a.duration_in_days - b.duration_in_days);
-  
+
   // Ordenar no ganadores por más nuevos primero
   nonWinners.sort((a, b) => b.duration_in_days - a.duration_in_days);
-  
+
   // Combinar: ganadores primero, luego no ganadores
   const combined = [...winners, ...nonWinners];
-  
+
   // Retornar solo el límite especificado
   return combined.slice(0, limit);
 }
